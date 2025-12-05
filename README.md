@@ -272,7 +272,10 @@ ChromEx.Collection.add(collection,
 ### Multi-tenancy
 
 ```elixir
-# Create collection in specific tenant/database
+# First, create the database in the tenant
+{:ok, _db} = ChromEx.Database.create("production", tenant: "acme_corp")
+
+# Then create collection in that tenant/database
 {:ok, collection} = ChromEx.Collection.create("my_collection",
   tenant: "acme_corp",
   database: "production"

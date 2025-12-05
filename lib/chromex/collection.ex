@@ -590,16 +590,29 @@ defmodule ChromEx.Collection do
   defp upsert_impl(%__MODULE__{} = collection, opts) do
     resource = Client.get_resource()
     ids = Keyword.get(opts, :ids) || raise ArgumentError, "ids are required"
-    embeddings = Keyword.get(opts, :embeddings)
-    metadatas = Keyword.get(opts, :metadatas)
     documents = Keyword.get(opts, :documents)
+    metadatas = Keyword.get(opts, :metadatas)
     uris = Keyword.get(opts, :uris)
+
+    embeddings =
+      case Keyword.get(opts, :embeddings) do
+        nil ->
+          if documents do
+            ChromEx.Embeddings.generate(documents)
+          else
+            raise ArgumentError, "Either embeddings or documents must be provided"
+          end
+
+        provided_embeddings ->
+          provided_embeddings
+      end
 
     metadatas_json =
       if metadatas do
         Enum.map(metadatas, fn
           nil -> nil
           meta when is_map(meta) -> Jason.encode!(meta)
+          meta when is_list(meta) -> Jason.encode!(Map.new(meta))
         end)
       end
 

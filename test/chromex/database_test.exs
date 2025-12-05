@@ -80,4 +80,37 @@ defmodule ChromEx.DatabaseTest do
       ChromEx.Collection.delete(collection_name, database: db_name)
     end
   end
+
+  describe "multi-tenancy" do
+    test "creates database with tenant and collection with full operations" do
+      tenant = "test_tenant_#{:rand.uniform(100000)}"
+      db_name = "test_db_#{:rand.uniform(100000)}"
+      collection_name = "test_coll_#{:rand.uniform(100000)}"
+
+      # First, create the database in the tenant
+      {:ok, db} = ChromEx.Database.create(db_name, tenant: tenant)
+      assert %ChromEx.Database{} = db
+      assert db.tenant == tenant
+
+      # Then create collection in that tenant/database
+      {:ok, collection} =
+        ChromEx.Collection.create(collection_name, tenant: tenant, database: db_name)
+
+      assert collection.tenant == tenant
+      assert collection.database == db_name
+
+      # Add documents with auto-embedding
+      ChromEx.Collection.add(collection, ids: ["id1"], documents: ["Test document"])
+
+      # Query to verify it works
+      {:ok, results} =
+        ChromEx.Collection.query(collection, query_texts: ["Test"], n_results: 1)
+
+      assert results["ids"] == [["id1"]]
+
+      # Cleanup
+      ChromEx.Collection.delete(collection_name, tenant: tenant, database: db_name)
+      ChromEx.Database.delete(db_name, tenant: tenant)
+    end
+  end
 end
