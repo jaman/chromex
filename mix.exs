@@ -1,7 +1,7 @@
 defmodule ChromEx.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.1.1"
   @source_url "https://github.com/jaman/chromex"
 
   def project do
@@ -31,7 +31,7 @@ defmodule ChromEx.MixProject do
     [
       {:rustler, "~> 0.37.0", runtime: false},
       {:jason, "~> 1.4"},
-      {:ortex, "~> 0.1.1"},
+      {:ortex, "~> 0.1.0"},
       {:tokenizers, "~> 0.5.0"},
       {:nx, "~> 0.7.0"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
