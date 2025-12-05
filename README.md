@@ -29,9 +29,15 @@ end
 
 ### Prerequisites
 
+**Required:**
 - Elixir >= 1.18
-- Rust toolchain (for building native extensions)
-- Git (for fetching Chroma source during build)
+- **Rust toolchain** (cargo must be available in PATH)
+  - Required for compiling native Chroma bindings and ONNX embedding generation
+  - The build process will fail if Rust is not installed
+
+**Note for Livebook users:** Livebook environments may not have Rust available by default. If you encounter compilation errors, you'll need to either:
+- Use a Livebook environment with Rust installed, or
+- Provide pre-computed embeddings instead of using auto-embedding (see examples below)
 
 ### Building
 
@@ -103,19 +109,24 @@ ChromEx.Collection.add(collection,
 
 ### Using Pre-computed Embeddings
 
-If you have embeddings from OpenAI, Cohere, or custom models, you can provide them directly:
+If you have embeddings from OpenAI, Cohere, or custom models, you can provide them directly. This is useful in environments where Rust/ONNX isn't available (like some Livebook setups):
 
 ```elixir
+# Generate embeddings from an external service
+embeddings = YourEmbeddingService.generate(["First doc", "Second doc"])
+
 ChromEx.Collection.add(collection,
   ids: ["id1", "id2"],
-  embeddings: [[0.1, 0.2, 0.3, ...], [0.4, 0.5, 0.6, ...]],
+  embeddings: embeddings,  # Provide embeddings directly
   documents: ["First doc", "Second doc"],
   metadatas: [%{source: "web"}, %{source: "api"}]
 )
 
 # Query with pre-computed embeddings
+query_embedding = YourEmbeddingService.generate(["search query"])
+
 {:ok, results} = ChromEx.Collection.query(collection,
-  query_embeddings: [[0.1, 0.2, 0.3, ...]],
+  query_embeddings: query_embedding,
   n_results: 10
 )
 ```
