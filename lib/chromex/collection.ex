@@ -480,9 +480,9 @@ defmodule ChromEx.Collection do
   @doc """
   Updates documents in a collection, raising on error
   """
-  @spec update_documents!(t(), [String.t()], keyword()) :: :ok
-  def update_documents!(%__MODULE__{} = collection, ids, opts \\ []) do
-    case update_documents(collection, ids, opts) do
+  @spec update_documents!(t(), [String.t()] | keyword(), keyword()) :: :ok
+  def update_documents!(%__MODULE__{} = collection, ids_or_opts, opts \\ []) do
+    case update_documents(collection, ids_or_opts, opts) do
       :ok -> :ok
       {:error, reason} -> raise "Failed to update documents: #{inspect(reason)}"
     end
@@ -490,10 +490,35 @@ defmodule ChromEx.Collection do
 
   @doc """
   Updates documents in a collection
+
+  ## Examples
+
+      # Positional IDs
+      ChromEx.Collection.update_documents(collection, ["id1", "id2"],
+        documents: ["Updated 1", "Updated 2"]
+      )
+
+      # Keyword-based IDs
+      ChromEx.Collection.update_documents(collection,
+        ids: ["id1", "id2"],
+        documents: ["Updated 1", "Updated 2"]
+      )
   """
-  @spec update_documents(t(), [String.t()], keyword()) :: :ok | {:error, term()}
-  def update_documents(%__MODULE__{} = collection, ids, opts \\ []) do
+  @spec update_documents(t(), [String.t()] | keyword(), keyword()) :: :ok | {:error, term()}
+  def update_documents(%__MODULE__{} = collection, ids_or_opts, opts \\ []) do
+    cond do
+      is_list(ids_or_opts) and Keyword.keyword?(ids_or_opts) ->
+        update_documents_impl(collection, Keyword.merge(ids_or_opts, opts))
+      is_list(ids_or_opts) ->
+        update_documents_impl(collection, Keyword.put(opts, :ids, ids_or_opts))
+      true ->
+        raise ArgumentError, "Expected list of IDs or keyword list"
+    end
+  end
+
+  defp update_documents_impl(%__MODULE__{} = collection, opts) do
     resource = Client.get_resource()
+    ids = Keyword.get(opts, :ids) || raise ArgumentError, "ids are required"
     embeddings = Keyword.get(opts, :embeddings)
     metadatas = Keyword.get(opts, :metadatas)
     documents = Keyword.get(opts, :documents)
@@ -526,9 +551,9 @@ defmodule ChromEx.Collection do
   @doc """
   Upserts documents in a collection, raising on error
   """
-  @spec upsert!(t(), [String.t()], keyword()) :: :ok
-  def upsert!(%__MODULE__{} = collection, ids, opts \\ []) do
-    case upsert(collection, ids, opts) do
+  @spec upsert!(t(), [String.t()] | keyword(), keyword()) :: :ok
+  def upsert!(%__MODULE__{} = collection, ids_or_opts, opts \\ []) do
+    case upsert(collection, ids_or_opts, opts) do
       :ok -> :ok
       {:error, reason} -> raise "Failed to upsert documents: #{inspect(reason)}"
     end
@@ -536,10 +561,35 @@ defmodule ChromEx.Collection do
 
   @doc """
   Upserts documents in a collection
+
+  ## Examples
+
+      # Positional IDs
+      ChromEx.Collection.upsert(collection, ["id1", "id2"],
+        documents: ["Doc 1", "Doc 2"]
+      )
+
+      # Keyword-based IDs
+      ChromEx.Collection.upsert(collection,
+        ids: ["id1", "id2"],
+        documents: ["Doc 1", "Doc 2"]
+      )
   """
-  @spec upsert(t(), [String.t()], keyword()) :: :ok | {:error, term()}
-  def upsert(%__MODULE__{} = collection, ids, opts \\ []) do
+  @spec upsert(t(), [String.t()] | keyword(), keyword()) :: :ok | {:error, term()}
+  def upsert(%__MODULE__{} = collection, ids_or_opts, opts \\ []) do
+    cond do
+      is_list(ids_or_opts) and Keyword.keyword?(ids_or_opts) ->
+        upsert_impl(collection, Keyword.merge(ids_or_opts, opts))
+      is_list(ids_or_opts) ->
+        upsert_impl(collection, Keyword.put(opts, :ids, ids_or_opts))
+      true ->
+        raise ArgumentError, "Expected list of IDs or keyword list"
+    end
+  end
+
+  defp upsert_impl(%__MODULE__{} = collection, opts) do
     resource = Client.get_resource()
+    ids = Keyword.get(opts, :ids) || raise ArgumentError, "ids are required"
     embeddings = Keyword.get(opts, :embeddings)
     metadatas = Keyword.get(opts, :metadatas)
     documents = Keyword.get(opts, :documents)

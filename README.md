@@ -205,14 +205,24 @@ ChromEx.Collection.delete("my_collection")
 # Get documents by IDs
 {:ok, docs} = ChromEx.Collection.get_documents(collection, ids: ["id1", "id2"])
 
-# Update documents
-ChromEx.Collection.update_documents(collection,
-  ids: ["id1"],
+# Update documents (both styles work)
+ChromEx.Collection.update_documents(collection, ["id1"],
   documents: ["Updated content"],
   metadatas: [%{updated_at: DateTime.utc_now()}]
 )
 
+# Or with keyword-based IDs
+ChromEx.Collection.update_documents(collection,
+  ids: ["id1"],
+  documents: ["Updated content"]
+)
+
 # Upsert (insert or update)
+ChromEx.Collection.upsert(collection, ["id1", "id2"],
+  documents: ["New or updated doc 1", "New or updated doc 2"]
+)
+
+# Or with keyword-based IDs
 ChromEx.Collection.upsert(collection,
   ids: ["id1", "id2"],
   documents: ["New or updated doc 1", "New or updated doc 2"]
