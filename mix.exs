@@ -48,7 +48,17 @@ defmodule ChromEx.MixProject do
   defp package do
     [
       name: "chromex",
-      files: ~w(lib native .formatter.exs mix.exs README.md LICENSE LICENSE-CHROMA),
+      files: ~w(
+        lib
+        native/chromex_native/src
+        native/chromex_native/Cargo.toml
+        native/chromex_native/Cargo.lock
+        .formatter.exs
+        mix.exs
+        README.md
+        LICENSE
+        LICENSE-CHROMA
+      ),
       licenses: ["MIT"],
       links: %{
         "GitHub" => @source_url,
