@@ -1,0 +1,46 @@
+[package]
+name = "chromex_native"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "chromex_native"
+crate-type = ["cdylib"]
+
+[dependencies]
+rustler = "0.37.0"
+tokio = { version = "1", features = ["full"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+
+[dependencies.chroma-frontend]
+git = "https://github.com/chroma-core/chroma.git"
+
+[dependencies.chroma-segment]
+git = "https://github.com/chroma-core/chroma.git"
+
+[dependencies.chroma-sqlite]
+git = "https://github.com/chroma-core/chroma.git"
+
+[dependencies.chroma-sysdb]
+git = "https://github.com/chroma-core/chroma.git"
+
+[dependencies.chroma-log]
+git = "https://github.com/chroma-core/chroma.git"
+
+[dependencies.chroma-config]
+git = "https://github.com/chroma-core/chroma.git"
+
+[dependencies.chroma-cache]
+git = "https://github.com/chroma-core/chroma.git"
+
+[dependencies.chroma-system]
+git = "https://github.com/chroma-core/chroma.git"
+
+[dependencies.chroma-types]
+git = "https://github.com/chroma-core/chroma.git"
+
+[dependencies.chroma-error]
+git = "https://github.com/chroma-core/chroma.git"
