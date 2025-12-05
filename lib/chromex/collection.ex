@@ -351,6 +351,41 @@ defmodule ChromEx.Collection do
       ChromEx.Collection.query(collection, [[0.1, 0.2, ...]],
         n_results: 5
       )
+
+      # With metadata filter (single condition)
+      ChromEx.Collection.query(collection,
+        query_texts: ["search"],
+        where: %{"year" => 2024},
+        n_results: 5
+      )
+
+      # With multiple conditions using $and
+      ChromEx.Collection.query(collection,
+        query_texts: ["search"],
+        where: %{"$and" => [%{"year" => 2024}, %{"source" => "web"}]},
+        n_results: 5
+      )
+
+      # With comparison operators
+      ChromEx.Collection.query(collection,
+        query_texts: ["search"],
+        where: %{"year" => %{"$gte" => 2023}},
+        n_results: 5
+      )
+
+  ## Metadata Filtering
+
+  Chroma uses a structured query language with the following operators:
+  - `$and` - Logical AND of conditions
+  - `$or` - Logical OR of conditions
+  - `$eq` - Equal (implicit when using direct value)
+  - `$ne` - Not equal
+  - `$gt` - Greater than
+  - `$gte` - Greater than or equal
+  - `$lt` - Less than
+  - `$lte` - Less than or equal
+  - `$in` - Value in list
+  - `$nin` - Value not in list
   """
   @spec query(t(), [[float()]] | keyword(), keyword()) :: {:ok, map()} | {:error, term()}
   def query(collection, query_embeddings_or_opts, opts \\ [])

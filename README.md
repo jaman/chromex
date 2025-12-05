@@ -122,6 +122,8 @@ ChromEx.Collection.add(collection,
 
 ### Metadata Filtering
 
+Chroma uses a structured query language for metadata filtering with operators like `$and`, `$or`, `$eq`, `$ne`, `$gt`, `$gte`, `$lt`, `$lte`, `$in`, `$nin`.
+
 ```elixir
 # Add documents with rich metadata
 ChromEx.Collection.add(collection,
@@ -134,10 +136,38 @@ ChromEx.Collection.add(collection,
   ]
 )
 
-# Query with metadata filter
+# Query with single condition
 {:ok, results} = ChromEx.Collection.query(collection,
   query_texts: ["search term"],
-  where: %{"year" => 2024, "source" => "web"},
+  where: %{"year" => 2024},
+  n_results: 5
+)
+
+# Query with multiple conditions using $and
+{:ok, results} = ChromEx.Collection.query(collection,
+  query_texts: ["search term"],
+  where: %{"$and" => [%{"year" => 2024}, %{"source" => "web"}]},
+  n_results: 5
+)
+
+# Query with $or operator
+{:ok, results} = ChromEx.Collection.query(collection,
+  query_texts: ["search term"],
+  where: %{"$or" => [%{"year" => 2024}, %{"year" => 2023}]},
+  n_results: 5
+)
+
+# Query with comparison operators
+{:ok, results} = ChromEx.Collection.query(collection,
+  query_texts: ["search term"],
+  where: %{"year" => %{"$gte" => 2023}},
+  n_results: 5
+)
+
+# Query with $in operator
+{:ok, results} = ChromEx.Collection.query(collection,
+  query_texts: ["search term"],
+  where: %{"source" => %{"$in" => ["web", "api"]}},
   n_results: 5
 )
 ```
