@@ -34,6 +34,9 @@ end
 - **Rust toolchain** (cargo must be available in PATH)
   - Required for compiling native Chroma bindings and ONNX embedding generation
   - The build process will fail if Rust is not installed
+- **Protocol Buffers compiler** (protoc must be available in PATH)
+  - Required for compiling Chroma's protobuf definitions
+  - Installation instructions: https://github.com/protocolbuffers/protobuf#protobuf-compiler-installation
 
 **Note for Livebook users:** Livebook environments may not have Rust available by default. If you encounter compilation errors, you'll need to either:
 - Use a Livebook environment with Rust installed, or
