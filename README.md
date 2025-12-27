@@ -22,7 +22,7 @@ Add `chromex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:chromex, "~> 0.1.0"}
+    {:chromex, "~> 0.1.5"}
   ]
 end
 ```
@@ -310,7 +310,9 @@ Configure ChromEx in your application:
 config :chromex,
   allow_reset: false,
   persist_path: "./chroma_data",
-  hnsw_cache_size_mb: 1000
+  hnsw_cache_size_mb: 1000,
+  # Pool size for parallel embedding generation (defaults to CPU cores)
+  embedding_pool_size: 8
 ```
 
 Or configure at runtime:
@@ -323,7 +325,7 @@ children = [
     persist_path: "./chroma_data",
     hnsw_cache_size_mb: 1000
   ]},
-  {ChromEx.Embeddings, []}
+  {ChromEx.EmbeddingsPool, [pool_size: 8]}
 ]
 ```
 
@@ -388,6 +390,9 @@ ChromEx uses the same embedding model as Python ChromaDB (all-MiniLM-L6-v2 via O
 - **L2-normalized vectors**
 - **Identical results to Python ChromaDB**
 - **Fast ONNX inference** via Ortex
+- **Parallel embedding generation** via worker pool (defaults to CPU core count)
+
+The embedding pool allows multiple embedding requests to be processed concurrently, with each worker maintaining its own model instance for maximum parallelism. Pool size automatically defaults to the number of CPU cores but can be configured via `:embedding_pool_size`.
 
 Benchmark results show comparable performance to Python for embedding generation and query operations.
 
